@@ -1,3 +1,4 @@
+const { response } = require("express");
 const User = require("../database/models/User");
 const { createToken } = require("../services/authServices");
 const bcrypt = require('bcrypt');
@@ -6,6 +7,10 @@ const registerUser = async(req) => {
     try {
         const {email, password } = req.body;
         const username = email.split("@")[0];
+        const existingUser = await User.findOne({email: email})
+        if(existingUser){
+            return {status:400,error:"User already exists. Please Login with the email",msg:"",data:{}}
+        }
         const user = new User({username:username, email: email, password: password});
         const result = await user.save();
         if(result){
