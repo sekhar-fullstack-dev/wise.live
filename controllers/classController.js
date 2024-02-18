@@ -29,11 +29,10 @@ const exitClass = async(req)=>{
     }
 }
 
-const getCurrentMonthDateRange = async() => {
+const getMonthDateRange = async(year, month) => {
     try {
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); // Set to the last moment of the month
+        const startOfMonth = new Date(year, month-1, 1);
+        const endOfMonth = new Date(year, month, 0, 23, 59, 59); // Set to the last moment of the month
         return { startOfMonth, endOfMonth };
     } catch (e) {
         throw e;
@@ -42,11 +41,11 @@ const getCurrentMonthDateRange = async() => {
 
 const attendenceData = async(req)=>{
     try {
-        const { startOfMonth, endOfMonth } = getCurrentMonthDateRange();
+        const { startOfMonth, endOfMonth } = await getMonthDateRange(req.body.year, req.body.month);
         const result = await TeacherAttendance.aggregate([
             {
               $match: {
-                createdAt: { $gte: startOfMonth, $lte: endOfMonth } // Filter documents created this month
+                startTime: { $gte: startOfMonth, $lte: endOfMonth } // Filter documents created this month
               }
             },
             {
@@ -76,7 +75,6 @@ const attendenceData = async(req)=>{
                 email: 1,
                 totalCheckedInTime: 1,
                 totalCheckedInTimeInHours: 1,
-                // Include any other fields you want to return
               }
             }
           ]);

@@ -20,7 +20,7 @@ const addAttendanceData = async(req)=>{
                     endTime.setMonth(month - 1, day);
                     endTime.setHours(9 + parseInt(timeInHours), 0, 0, 0); // Adds timeInHours to start time
 
-                    await TeacherAttendance.create({
+                    const newEntry = new TeacherAttendance({
                         email,
                         className: "Sample Class", // Placeholder, update as needed
                         classId: "SampleClassId", // Placeholder, update as needed
@@ -28,6 +28,7 @@ const addAttendanceData = async(req)=>{
                         endTime,
                         isCompleted: true // Assuming completion, update as needed
                     });
+                    await newEntry.save();
                 }
             }
         }
